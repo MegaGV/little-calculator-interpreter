@@ -1,2 +1,2 @@
-# little-calculator-compiler
-little calculator's compiler from c++ to CMS
+# little-calculator-interpreter
+little calculator's interpreter using scheme
