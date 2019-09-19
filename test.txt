@@ -1,0 +1,29 @@
+(my-eval '(chu 5  3))
+(my-eval '(chu 5))
+
+(my-eval '($ 2 3))
+
+(my-eval '(+ 4 5))
+(my-eval '(+ a 5))
+
+(my-eval '(- 5 6))
+
+(my-eval '(* 4 4 4 4 a))
+(my-eval '(* 4 a))
+(my-eval '(* 4 ))
+(my-eval '(* 4 5 6))
+(my-eval '(* 4 5))
+
+(my-eval '(/  3))
+(my-eval '(/ 5 4))
+(my-eval '(/ (/ 4 3) 0))
+(my-eval '(/ 4 3 0))
+(my-eval '(/ 4 0))
+
+(my-eval '(1 2 3))
+(my-eval '(+ + +))
+(my-eval '())
+(my-eval list (5))
+(my-eval list (5 4))
+(my-eval "5")
+(my-eval '5)

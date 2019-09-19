@@ -1,4 +1,33 @@
 #lang scheme
+(define (!= x y) (not (= x y)))
+
+(define one-operator-set
+  (list (list '+
+              +
+              (lambda (args) (and (>= (length args) 0) #t)))  ; (+) means (+ 0 0)
+        (list '-
+              -
+              (lambda (args) (and (>= (length args) 1) #t)))  ; (- 1) means (- 0 1)
+        (list '*
+              *
+              (lambda (args) (and (>= (length args) 0) #t)))  ; (*) means (* 1 1)
+        (list '/
+              /
+              (lambda (args) (not (or (< (length args) 1) (and (>= (length args) 2) (ormap zero? (cdr args)))))))  ; (/ 1) means (/ 1 1)
+        (list 'chu
+              (lambda (x) (display "This function is in chu with ") (display x) (display ".") (newline))
+              (lambda (args) (and (= (length args) 1) #t)))
+        ))
+
+(define (get-operators-proc-sub operator-list)
+  (cadr operator-list))
+
+(define (get-operators-argcheck-sub operator-list)
+  (caddr operator-list))
+
+(define (get-operators-proc operator-set sub-func operator)
+  (cond ((eq? operator (caar operator-set)) (sub-func (car operator-set)))
+        (else (get-operators-proc (cdr operator-set) sub-func operator))))
 
 (define (list-display list blank?)
   (cond ((not (null? list))
@@ -16,25 +45,33 @@
 (define (empty-function . x)
   (begin x))
 
-; (+ 1 2)
 (define (function-to-get-proc symbol)
-  (cond ((eq? symbol '+) +)
-        ((eq? symbol '-) -)
-        ((eq? symbol '*) *)
-        ((eq? symbol '/) /)
-        (else (begin (error-proc "Unrecognize proc \"" symbol "\".") error-args))))
+  (get-operators-proc one-operator-set get-operators-proc-sub symbol))
+
+(define (function-to-get-proc-argcheck symbol)
+  (get-operators-proc one-operator-set get-operators-argcheck-sub symbol))
+
+(define (function-to-get-proc-proccheck symbol)
+  (assoc symbol one-operator-set))
 
 (define (function-to-get-sym expr)
-  (function-to-get-proc expr))  ; Now only handle proc symbol
+  (function-to-get-proc expr))
 
 (define (function-to-get-list expr)
-  (apply (function-to-get-proc (car expr))
-         (cdr expr)))
+  (let ((proc-symbol (car expr)) (args (cdr expr)))
+    (if (function-to-get-proc-proccheck proc-symbol)
+    (if ((function-to-get-proc-argcheck proc-symbol) args)  ; Check Args
+        (apply (function-to-get-proc proc-symbol) args)
+        (error-proc "Error args."))
+    (error-proc "Error proc."))))
 
 (define (function-to-get-num expr)
   expr)
 
 (define (my-eval expr)
-  (cond ((list? expr) (function-to-get-list expr))
-        ((number? expr) (function-to-get-num expr))
-        ((symbol? expr) (function-to-get-sym expr))))
+  (cond((null? expr) (error-proc "empty list."))
+       ((list? expr) (function-to-get-list expr))
+       ((number? expr) (function-to-get-num expr))
+       ((symbol? expr) (function-to-get-sym expr))))
+
+
